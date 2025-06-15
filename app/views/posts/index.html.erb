@@ -1,6 +1,6 @@
 <h1 class="">Blog Posts</h1>
 
-<%= link_to "New post", new_post_path %>
+<%= link_to "New Post", post_new_path if user_signed_in? %>
 
 <% @posts.each do |post| %>
   <div>

@@ -3,5 +3,5 @@
 <h1><%= @post.title %></h1>
 <p><%= @post.body %></p>
 
-<%= link_to "Edit this post", edit_post_path %>
-<%= button_to "Delete this post", @post, method: :delete, data: {  turbo_confirm: "Are you sure?" } %>
+<%= link_to "Edit this post", edit_post_path(@post) if user_signed_in? %>
+<%= button_to "Delete this post", @post, method: :delete, data: { turbo_confirm: "Are you sure?" } if user_signed_in? %>

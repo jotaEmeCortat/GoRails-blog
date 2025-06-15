@@ -9,6 +9,9 @@
 #   end
 require 'faker'
 
+user = User.where(email: "test@test.com").first_or_initialize
+user.update!(password: "123456", password_confirmation: "123456")
+
 Post.destroy_all
 
 10.times do
