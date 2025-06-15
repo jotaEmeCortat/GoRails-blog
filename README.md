@@ -373,3 +373,10 @@ rails generate devise:views
 Then you can edit the views in `app/views/devise/`.
 
 ## 13. Deploying our Rails Blog to Production
+
+[https://render.com/](https://render.com/)
+
+```bash
+rails db:system:change --to=postgresql
+bundle
+```
