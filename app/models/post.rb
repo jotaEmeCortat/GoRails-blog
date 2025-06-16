@@ -1,4 +1,6 @@
 class Post < ApplicationRecord
+  has_rich_text :body
+  
   validates :title, :body, presence: true
 
   scope :sorted,    -> { order(arel_table[:published_at].desc.nulls_first).order(updated_at: :desc) }

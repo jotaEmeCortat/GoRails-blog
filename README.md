@@ -539,3 +539,27 @@ In `app/models/post.rb`, add a scope to sort posts and draft posts at the beginn
 ```ruby
  scope :sorted,    -> { order(arel_table[:published_at].desc.nulls_first).order(updated_at: :desc) }
 ```
+
+## 17. Rich Text Blog Posts with ActionText
+
+```bash
+rails action_text:install
+rails db:migrate
+```
+
+In `app/models/post.rb`, add the `has_rich_text` association:
+
+```ruby
+has_rich_text :body
+# [...]
+```
+
+In `app/views/posts/_form.html.erb`, replace the text area for the body with a
+rich text editor:
+
+```erb
+<div>
+  <%= form.label :body %>
+  <%= form.rich_text_area :body, class: "prose" %>
+</div>
+```
