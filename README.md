@@ -531,3 +531,11 @@ test "scheduled? returns false for published post" do
   refute posts(:published).scheduled?
 end
 ```
+
+## 16. Sorting Blog Posts With Scopes
+
+In `app/models/post.rb`, add a scope to sort posts and draft posts at the beginning:
+
+```ruby
+ scope :sorted,    -> { order(arel_table[:published_at].desc.nulls_first).order(updated_at: :desc) }
+```

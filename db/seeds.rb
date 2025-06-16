@@ -23,3 +23,11 @@ Post.destroy_all
   puts "Created post with ID: #{post.id}, Title: '#{post.title}'"
   post.save!
 end
+
+draft_post = Post.create!(
+    title: Faker::Book.title,
+    body: Faker::Lorem.paragraph(sentence_count: 5),
+    published_at: nil
+  )
+  puts "Created post with ID: #{draft_post.id}, Title: '#{draft_post.title}'"
+  draft_post.save!
