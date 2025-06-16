@@ -534,7 +534,8 @@ end
 
 ## 16. Sorting Blog Posts With Scopes
 
-In `app/models/post.rb`, add a scope to sort posts and draft posts at the beginning:
+In `app/models/post.rb`, add a scope to sort posts and draft posts at the
+beginning:
 
 ```ruby
  scope :sorted,    -> { order(arel_table[:published_at].desc.nulls_first).order(updated_at: :desc) }
@@ -562,4 +563,59 @@ rich text editor:
   <%= form.label :body %>
   <%= form.rich_text_area :body, class: "prose" %>
 </div>
+```
+
+## 18. How to Add Pagination for Blog Posts in Rails
+
+Use the [pagy gem](https://github.com/ddnexus/pagy)
+
+### pagy installation
+
+```bash
+bundle add pagy
+```
+
+In `app/controllers/application_controller.rb`, include the Pagy module:
+
+```ruby
+include Pagy::Backend
+```
+
+In `app/helpers/application_helper.rb`, include the Pagy module:
+
+```ruby
+include Pagy::Frontend
+```
+
+In `app/controllers/ApplicationController.rb`, add the `pagy` method to paginate
+
+```ruby
+class ApplicationController < ActionController::Base
+  include Pagy::Backend
+end
+```
+
+In `app/helpers/application_helper.rb`, include the Pagy module:
+
+```ruby
+module ApplicationHelper
+  include Pagy::Frontend
+end
+```
+
+In `app/controllers/posts_controller.rb`, update the `index` action to use Pagy:
+
+```ruby
+def index
+  @posts = user_signed_in? ? Post.sorted.all : Post.published.sorted
+  @pagy, @posts = pagy(@posts, limit: 5)
+rescue Pagy::OverflowError
+  redirect_to root_path, alert: "No more posts available"
+end
+```
+
+Finally, in `app/views/posts/index.html.erb`, add the Pagy pagination links:
+
+```erb
+<%== pagy_nav(@pagy)  %>
 ```

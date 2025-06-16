@@ -3,6 +3,9 @@ class PostsController < ApplicationController
   before_action :set_post, only: [:show, :edit, :update, :destroy]
   def index
     @posts = user_signed_in? ? Post.sorted.all : Post.published.sorted
+    @pagy, @posts = pagy(@posts, limit: 5)
+  rescue Pagy::OverflowError
+    redirect_to root_path, alert: "No more posts available"
   end
 
   def show

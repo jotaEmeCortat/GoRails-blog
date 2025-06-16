@@ -14,7 +14,7 @@ user.update!(password: "123456", password_confirmation: "123456")
 
 Post.destroy_all
 
-10.times do
+50.times do
   post = Post.create!(
     title: Faker::Book.title,
     body: Faker::Lorem.paragraph(sentence_count: 5),
