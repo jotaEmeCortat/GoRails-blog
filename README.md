@@ -380,3 +380,92 @@ Then you can edit the views in `app/views/devise/`.
 rails db:system:change --to=postgresql
 bundle
 ```
+
+## 14. Adding Scheduled Blog Posts
+
+To add a published_at field to your posts, you need to create a migration:
+
+```bash
+rails generate migration AddPublishedAtToPosts published_at:datetime
+rails db:migrate
+```
+
+In `app/models/post.rb`, add scopes to order, filter posts by their published status
+and create a method to check if a post is published:
+
+```ruby
+scope :order,     -> { order(published_at: :desc) }
+scope :draft,     -> { where(published_at: nil) }
+scope :published, -> { where("published_at <= ?", Time.current) }
+scope :scheduled, -> { where("published_at > ?",  Time.current) }
+
+def draft?
+  published_at.nil?
+end
+
+def published?
+  published_at? && published_at <= Time.current
+end
+
+def scheduled?
+  published_at? && published_at > Time.current
+end
+```
+
+In `app/controllers/posts_controller.rb`, update the `index` to show only
+published posts in order:
+
+```ruby
+def index
+  @posts = user_signed_in? ? Post.all.sorted : Post.published.sorted
+end
+```
+
+update the `set_post` method to handle scheduled posts:
+
+```ruby
+def set_post
+  if user_signed_in?
+  @post = Post.find(params[:id])
+  else
+    @post = Post.published.find(params[:id])
+  end
+rescue ActiveRecord::RecordNotFound
+  redirect_to root_path, alert: "Post not found"
+end
+```
+
+and add a `published_at` in `post_params`:
+
+```ruby
+def post_params
+  params.require(:post).permit(:title, :body, :published_at)
+end
+```
+
+In `app/views/posts/_form.html.erb`, add a field for the `published_at`:
+
+```erb
+<div>
+  <%= form.label :published_at %>
+  <%= form.datetime_select :published_at, include_blank: true %>
+</div>
+```
+
+In `app/views/posts/index.html.erb`, add a logic to view draft, scheduled and published posts:
+
+```erb
+<% @posts.each do |post| %>
+  <div>
+    <h3><%= link_to post.title, post_path(post) %></h3>
+    <% if post.draft? %>
+      <p class="text-gray-500">Draft</p>
+    <% elsif post.scheduled? %>
+      <p class="text-yellow-500">Scheduled: <%= post.published_at.strftime("%B %d, %Y") %></p>
+    <% else %>
+      <p>Published at: <%= post.published_at.strftime("%B %d, %Y") if post.published_at %></p>
+    <% end %>
+    <p><%= post.body %></p>
+  </div>
+<% end %>
+```

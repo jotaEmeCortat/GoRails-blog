@@ -17,7 +17,8 @@ Post.destroy_all
 10.times do
   post = Post.create!(
     title: Faker::Book.title,
-    body: Faker::Lorem.paragraph(sentence_count: 5)
+    body: Faker::Lorem.paragraph(sentence_count: 5),
+    published_at: Faker::Date.between(from: '2024-01-01', to: '2025-12-31')
   )
   puts "Created post with ID: #{post.id}, Title: '#{post.title}'"
   post.save!
