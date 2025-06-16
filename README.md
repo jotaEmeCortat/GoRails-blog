@@ -390,8 +390,8 @@ rails generate migration AddPublishedAtToPosts published_at:datetime
 rails db:migrate
 ```
 
-In `app/models/post.rb`, add scopes to order, filter posts by their published status
-and create a method to check if a post is published:
+In `app/models/post.rb`, add scopes to order, filter posts by their published
+status and create a method to check if a post is published:
 
 ```ruby
 scope :order,     -> { order(published_at: :desc) }
@@ -452,7 +452,8 @@ In `app/views/posts/_form.html.erb`, add a field for the `published_at`:
 </div>
 ```
 
-In `app/views/posts/index.html.erb`, add a logic to view draft, scheduled and published posts:
+In `app/views/posts/index.html.erb`, add a logic to view draft, scheduled and
+published posts:
 
 ```erb
 <% @posts.each do |post| %>
@@ -468,4 +469,65 @@ In `app/views/posts/index.html.erb`, add a logic to view draft, scheduled and pu
     <p><%= post.body %></p>
   </div>
 <% end %>
+```
+
+## 15. Writing Tests for Scheduled Blog Posts
+
+In `test/fixtures/posts.yml`, add a posts exemples:
+
+```yaml
+draft:
+  title: draft post
+  body: MyText
+  published_at: null
+
+published:
+  title: published post
+  body: MyText
+  published_at: <%= 1.year.ago %>
+
+scheduled:
+  title: scheduled post
+  body: MyText
+  published_at: <%= 1.year.from_now %>
+```
+
+In `test/models/post_test.rb`, add tests for the scopes and methods:
+
+```ruby
+  test "draft? returns true for draft post" do
+  assert posts(:draft).draft?
+end
+
+test "draft? returns false for published post" do
+  refute posts(:published).draft?
+end
+
+test "draft? returns false for scheduled post" do
+  refute posts(:scheduled).draft?
+end
+
+test "published? returns true for published post" do
+  assert posts(:published).published?
+end
+
+test "published? returns false for draft post" do
+  refute posts(:draft).published?
+end
+
+test "published? returns false for scheduled post" do
+  refute posts(:scheduled).published?
+end
+
+test "scheduled? returns true for scheduled post" do
+  assert posts(:scheduled).scheduled?
+end
+
+test "scheduled? returns false for draft post" do
+  refute posts(:draft).scheduled?
+end
+
+test "scheduled? returns false for published post" do
+  refute posts(:published).scheduled?
+end
 ```
