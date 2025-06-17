@@ -22,7 +22,8 @@ Post.destroy_all
   post = Post.create!(
     title: Faker::Book.title,
     body: body,
-    published_at: Faker::Date.between(from: '2024-01-01', to: '2025-12-31')
+    published_at: Faker::Date.between(from: '2024-01-01', to: '2025-12-31'),
+    author: user
   )
 
     image_url = "https://picsum.photos/600/400?random=#{rand(1..1000)}"
@@ -39,7 +40,8 @@ end
 draft_post = Post.create!(
     title: Faker::Book.title,
     body: Faker::Lorem.paragraph(sentence_count: 5),
-    published_at: nil
+    published_at: nil,
+    author: user
   )
   puts "Created post with ID: #{draft_post.id}, Title: '#{draft_post.title}'"
   draft_post.save!

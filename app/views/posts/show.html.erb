@@ -1,5 +1,6 @@
 <%= image_tag @post.cover_image if @post.cover_image.present? %>
 <h1><%= @post.title %></h1>
+<p><%= @post.published_at.strftime("%B %d, %Y") %> | <%= @post.author.email %></p>
 <p><%= @post.body %></p>
 
 <% if user_signed_in? %>
