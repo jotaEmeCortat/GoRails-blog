@@ -619,3 +619,72 @@ Finally, in `app/views/posts/index.html.erb`, add the Pagy pagination links:
 ```erb
 <%== pagy_nav(@pagy)  %>
 ```
+
+## 19. Upload Cover Images in Rails with ActiveStorage
+
+In `app/models/post.rb`, add the `has_one_attached` association for the cover
+image:
+
+```ruby
+has_one_attached :cover_image
+```
+
+In `app/controllers/posts_controller.rb`, permit the `cover_image` parameter in
+`post_params`:
+
+```ruby
+def post_params
+  params.require(:post).permit(:title, :body, :published_at, :cover_image)
+end
+```
+
+In `app/views/posts/_form.html.erb`, add a file field for the cover image:
+
+```erb
+<%= image_tag @post.cover_image if @post.cover_image.present? %>
+<div>
+  <%= form.label :cover_image %>
+  <%= form.file_field :cover_image %>
+</div>
+```
+
+In `app/views/posts/show.html.erb`, display the cover image if it exists:
+
+```erb
+<%= image_tag @post.cover_image if @post.cover_image.present? %>
+```
+
+### Remove cover image
+
+In `config/routes.rb`, add a route to remove the cover image:
+
+```ruby
+resources :posts do
+  resource :cover_image, only: [:destroy], module: :posts
+end
+```
+
+Create a new controller `app/controllers/posts/cover_images_controller.rb`:
+
+```ruby
+class Posts::CoverImagesController < ApplicationController
+  before_action :authenticate_user!
+  before_action :set_post
+
+  def destroy
+    @post.cover_image.purge_later
+    redirect_to edit_post_path(@post), notice: "Cover image was successfully removed."
+  end
+
+  private
+  def set_post
+    @post = Post.find(params[:post_id])
+  end
+end
+```
+
+In `app/views/posts/form.html.erb`, add a link to remove the cover image:
+
+```erb
+<%= link_to "Remove cover image", post_cover_image_path(@post), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %>
+```

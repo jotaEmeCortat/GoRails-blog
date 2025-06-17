@@ -6,7 +6,9 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   devise_for :users
-  resources :posts
+  resources :posts do
+    resource :cover_image, only: [:destroy], module: :posts
+  end
 
   # Defines the root path route ("/")
   root "posts#index"

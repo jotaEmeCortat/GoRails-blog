@@ -8,18 +8,30 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 require 'faker'
+require "open-uri"
 
 user = User.where(email: "test@test.com").first_or_initialize
 user.update!(password: "123456", password_confirmation: "123456")
 
 Post.destroy_all
 
-50.times do
+20.times do
+  paragraphs = Array.new(8) { Faker::Lorem.paragraph(sentence_count: rand(4..8)) }
+  body = paragraphs.map { |p| "<p>#{p}</p>" }.join
+
   post = Post.create!(
     title: Faker::Book.title,
-    body: Faker::Lorem.paragraph(sentence_count: 5),
+    body: body,
     published_at: Faker::Date.between(from: '2024-01-01', to: '2025-12-31')
   )
+
+    image_url = "https://picsum.photos/600/400?random=#{rand(1..1000)}"
+  post.cover_image.attach(
+    io: URI.open(image_url),
+    filename: "random-#{post.id}.jpg",
+    content_type: "image/jpeg"
+  )
+
   puts "Created post with ID: #{post.id}, Title: '#{post.title}'"
   post.save!
 end

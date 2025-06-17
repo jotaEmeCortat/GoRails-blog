@@ -13,4 +13,8 @@
  *= require_tree .
  *= require_self
  */
-@import "pagy.css";
+@import 'pagy.css';
+
+.trix-content p {
+  margin-bottom: 1rem;
+}

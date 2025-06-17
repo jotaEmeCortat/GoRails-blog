@@ -5,17 +5,19 @@
 <% end %>
 
 <% @posts.each do |post| %>
-  <div>
+  <div class="mb-6">
     <h3><%= link_to post.title, post_path(post) %></h3>
     <% if post.draft? %>
       <p class="text-gray-500">Draft</p>
     <% elsif post.scheduled? %>
       <p class="text-yellow-500">Scheduled: <%= post.published_at.strftime("%B %d, %Y") %></p>
     <% else %>
-      <p>Published at: <%= post.published_at.strftime("%B %d, %Y") if post.published_at %></p>
+      Published at: <%= post.published_at.strftime("%B %d, %Y") if post.published_at %></p>
     <% end %>
-    <p><%= post.body %></p>
+    <div class="text-gray-700">
+      <%= truncate(strip_tags(post.body.to_s), length: 200, separator: ' ') %>
+    </div>
   </div>
 <% end %>
 
-<%== pagy_nav(@pagy)  %>
+<%== pagy_nav(@pagy) %>
